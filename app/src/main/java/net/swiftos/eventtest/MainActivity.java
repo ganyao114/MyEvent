@@ -8,6 +8,7 @@ import android.widget.Toast;
 import net.swiftos.eventposter.Core.EventPoster;
 import net.swiftos.eventposter.Impls.ActivityLife.Annotation.ActivityLife;
 import net.swiftos.eventposter.Impls.ActivityLife.Entity.ActivityLifeType;
+import net.swiftos.eventposter.Impls.ActivityLife.Handler.ActivityLifeHandler;
 
 public class MainActivity extends AppCompatActivity {
 
