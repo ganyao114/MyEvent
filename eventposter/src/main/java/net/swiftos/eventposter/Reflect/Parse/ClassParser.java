@@ -46,16 +46,14 @@ public class ClassParser {
     }
 
     public static Method[] getMethods(Class clazz){
-        Method[] res = null;
-        res = ReflectionCache.getMethods(clazz);
-        if (res == null){
-            synchronized (clazz){
-                if (res == null){
-                    res = methods(clazz);
-                }
+        synchronized (clazz) {
+            Method[] res = null;
+            res = ReflectionCache.getMethods(clazz);
+            if (res == null) {
+                res = methods(clazz);
             }
+            return res;
         }
-        return res;
     }
 
     private static Method[] methods(Class clazz){
@@ -67,7 +65,7 @@ public class ClassParser {
             if (annotations == null||annotations.length == 0) continue;
             List<EventAnnoInfo> eventAnnoInfos = new ArrayList<>();
             for (Annotation annotation:annotations){
-                EventBase eventBase = annotation.getClass().getAnnotation(EventBase.class);
+                EventBase eventBase = annotation.annotationType().getAnnotation(EventBase.class);
                 if (eventBase == null) continue;
                 Class<? extends IHandler> handler = eventBase.value();
                 EventAnnoInfo eventAnnoInfo = new EventAnnoInfo();
