@@ -10,9 +10,18 @@ import java.lang.reflect.Method;
  */
 public class EventAnnoInfo {
 
+    private Class clazz;
     private Method method;
     private Class<? extends IHandler> handler;
     private Annotation annotation;
+
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class clazz) {
+        this.clazz = clazz;
+    }
 
     public Method getMethod() {
         return method;

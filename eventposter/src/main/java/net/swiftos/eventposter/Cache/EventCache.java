@@ -14,5 +14,4 @@ public class EventCache {
     private static Map<Annotation,IEventEntity> eventEntityMap = new ConcurrentHashMap<>();
 
 
-
 }

@@ -11,5 +11,5 @@ import java.lang.reflect.Method;
 public interface IHandler {
     public void inject(Annotation annotation, Method method, Object object);
     public void init(Object... objects);
-    public void preLoad(EventAnnoInfo annoInfo);
+    public void load(EventAnnoInfo annoInfo);
 }

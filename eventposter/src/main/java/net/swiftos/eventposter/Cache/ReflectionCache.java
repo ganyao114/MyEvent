@@ -22,8 +22,8 @@ public class ReflectionCache {
         methodsMap.put(clazz, methods);
     }
 
-    public static EventAnnoInfo[] getAnnoInfo(Class clazz){
-        return anooMaps.get(clazz);
+    public static EventAnnoInfo[] getAnnoInfo(Method method){
+        return anooMaps.get(method);
     }
 
     public static void addAnnoInfo(Method method,EventAnnoInfo[] eventAnnoInfos){
