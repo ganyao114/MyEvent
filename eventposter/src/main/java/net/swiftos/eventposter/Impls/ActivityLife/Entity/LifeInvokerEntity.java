@@ -2,6 +2,7 @@ package net.swiftos.eventposter.Impls.ActivityLife.Entity;
 
 import android.app.Activity;
 
+import net.swiftos.eventposter.Exception.EventInvokeException;
 import net.swiftos.eventposter.Interface.IEventEntity;
 
 import java.lang.reflect.Method;
@@ -48,13 +49,13 @@ public class LifeInvokerEntity implements IEventEntity{
         this.type = type;
     }
 
-
-    public Object invoke(Object invoker,Object... pars){
+    @Override
+    public Object invoke(Object invoker,Object... pars)throws EventInvokeException {
         Object ret = null;
         try {
             ret = method.invoke(invoker,pars);
         } catch (Exception e) {
-
+            throw new EventInvokeException(e.getMessage());
         }
         return ret;
     }

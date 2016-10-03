@@ -7,6 +7,7 @@ import android.os.Bundle;
 import net.swiftos.eventposter.Cache.EventCache;
 import net.swiftos.eventposter.Core.Injecter;
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
+import net.swiftos.eventposter.Exception.EventInvokeException;
 import net.swiftos.eventposter.Impls.ActivityLife.Annotation.ActivityLife;
 import net.swiftos.eventposter.Impls.ActivityLife.Entity.ActivityBinder;
 import net.swiftos.eventposter.Impls.ActivityLife.Entity.ActivityLifeType;
@@ -124,7 +125,11 @@ public class ActivityLifeHandler implements IHandler,Application.ActivityLifecyc
             if (iks == null||iks.size() == 0)
                 continue;
             for (Object invoker:iks){
-                entity.invoke(invoker,pars);
+                try {
+                    entity.invoke(invoker,pars);
+                } catch (EventInvokeException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
