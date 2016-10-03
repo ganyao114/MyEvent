@@ -13,5 +13,12 @@ public class EventCache {
 
     private static Map<Annotation,IEventEntity> eventEntityMap = new ConcurrentHashMap<>();
 
+    public static IEventEntity getEventEntity(Annotation annotation){
+        return eventEntityMap.get(annotation);
+    }
+
+    public static void addEventEntity(Annotation annotation,IEventEntity eventEntity){
+        eventEntityMap.put(annotation, eventEntity);
+    }
 
 }

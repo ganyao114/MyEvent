@@ -14,15 +14,14 @@ public class LifeInvokerEntity implements IEventEntity{
     private Method method;
     private Class invokerType;
     private ActivityLifeType type;
-    private Class<? extends Activity> tarType;
+    private Class<? extends Activity>[] tarTypes;
 
-
-    public Class<? extends Activity> getTarType() {
-        return tarType;
+    public Class<? extends Activity>[] getTarTypes() {
+        return tarTypes;
     }
 
-    public void setTarType(Class<? extends Activity> tarType) {
-        this.tarType = tarType;
+    public void setTarTypes(Class<? extends Activity>[] tarTypes) {
+        this.tarTypes = tarTypes;
     }
 
     public Class getInvokerType() {
