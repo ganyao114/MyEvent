@@ -82,11 +82,13 @@ public class CustomEventHandler implements IHandler<CustomEventEntity>{
 
     public void broadcast(Object object){
         Map<String,CustomEventEntity> map = eventMap.get(object.getClass());
-        if (map == null)
+        if (map == null||map.size() == 0)
             return;
         for (Map.Entry<String,CustomEventEntity> entry:map.entrySet()){
             CustomEventEntity entity = entry.getValue();
             Vector invokers = Injecter.getInsts(entity.getInvokeType());
+            if (invokers == null||invokers.size() == 0)
+                continue;
             for (Object invoker:invokers){
                 try {
                     entity.invoke(invoker,object);
@@ -101,9 +103,39 @@ public class CustomEventHandler implements IHandler<CustomEventEntity>{
         Map<String,CustomEventEntity> map = eventMap.get(object.getClass());
         if (map == null)
             return;
+        CustomEventEntity entity = map.get(name);
+        if (entity == null)
+            return;
+        Vector invokers = Injecter.getInsts(entity.getInvokeType());
+        if (invokers == null)
+            return;
+        for (Object invoker:invokers){
+            try {
+                entity.invoke(invoker,object);
+            } catch (EventInvokeException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public ExtCall As(Object object){
+        return new ExtCall(object);
     }
 
     public class ExtCall{
+        private Object object;
+
+        public ExtCall(Object object) {
+            this.object = object;
+        }
+
+        public void BroadCast(){
+            broadcast(object);
+        }
+
+        public void Post(String name){
+            post(object,name);
+        }
 
     }
 

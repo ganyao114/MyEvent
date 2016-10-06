@@ -15,18 +15,20 @@ public class HandlerFactory {
             new ConcurrentHashMap<>();
 
     public static IHandler getHandler(Class<? extends IHandler> type){
-        synchronized (type) {
-            IHandler handler = map.get(type);
-            if (handler == null) {
-                try {
-                    handler = type.newInstance();
-                    map.put(type, handler);
-                } catch (Exception e) {
-                    return null;
+        IHandler handler = map.get(type);
+        if (handler == null) {
+            synchronized (type) {
+                if (handler == null) {
+                    try {
+                        handler = type.newInstance();
+                        map.put(type, handler);
+                    } catch (Exception e) {
+                        return null;
+                    }
                 }
             }
-            return handler;
         }
+        return handler;
     }
 
 }
