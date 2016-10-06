@@ -39,7 +39,7 @@ public class Invoker {
         mainHandler = new Handler(Looper.getMainLooper());
     }
 
-    public Future invoke(Method method, Object object,RunContextType type,int delay, Object... values){
+    public Future invoke(Method method, Object object,RunContextType type,int delay, Object... values) throws EventInvokeException {
         Future future = null;
         switch (type){
             case CurrentThread:
@@ -73,7 +73,7 @@ public class Invoker {
         return future;
     }
 
-    private Future invoke_dynamic(Method method, Object object, Object... values) {
+    private Future invoke_dynamic(Method method, Object object, Object... values) throws EventInvokeException {
         RunContextType type = null;
         int delay = 0;
         try {
@@ -150,7 +150,7 @@ public class Invoker {
         new Thread(entity).start();
     }
 
-    private void invoke_main_thread(Method method, Object object, int delay, Object... values) {
+    private void invoke_main_thread(Method method, Object object, int delay, Object... values) throws EventInvokeException {
         Looper mianLoop = Looper.getMainLooper();
         ProxyEntity entity = new ProxyEntity(method,object,values);
         if (Looper.myLooper() != Looper.getMainLooper()){
@@ -180,7 +180,7 @@ public class Invoker {
             handler.postDelayed(entity,delay);
     }
 
-    private <T> T invoke_current_thread(Method method, Object object, int delay, Object... values) {
+    private <T> T invoke_current_thread(Method method, Object object, int delay, Object... values) throws EventInvokeException {
         if (delay!=0) {
             try {
                 Thread.currentThread().sleep(delay);
@@ -191,14 +191,12 @@ public class Invoker {
         return invoke_direct(method, object, values);
     }
 
-    public static <T> T invoke_direct(Method method, Object object, Object... values) {
+    public static <T> T invoke_direct(Method method, Object object, Object... values) throws EventInvokeException {
         Object ret = null;
         try {
             ret = method.<T>invoke(object,values);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new EventInvokeException(e.getMessage());
         }
         if (ret == null)
             return null;

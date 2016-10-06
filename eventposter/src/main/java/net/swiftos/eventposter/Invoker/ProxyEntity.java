@@ -1,5 +1,7 @@
 package net.swiftos.eventposter.Invoker;
 
+import net.swiftos.eventposter.Exception.EventInvokeException;
+
 import java.lang.reflect.Method;
 
 /**
@@ -32,6 +34,10 @@ public class ProxyEntity implements Runnable {
                 e.printStackTrace();
             }
         }
-        Invoker.invoke_direct(method,object,args);
+        try {
+            Invoker.invoke_direct(method,object,args);
+        } catch (EventInvokeException e) {
+            e.printStackTrace();
+        }
     }
 }

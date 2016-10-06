@@ -18,4 +18,5 @@ import java.lang.annotation.Target;
 public @interface InjectEvent {
     String name() default "";
     RunContextType runType() default RunContextType.CurrentThread;
+    int delay() default 0;
 }
