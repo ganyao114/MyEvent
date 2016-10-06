@@ -12,8 +12,8 @@ public interface IHandler<T extends IEventEntity> {
     public void init(Object... objects);
     public void destory(Object... objects);
     public T parse(EventAnnoInfo annoInfo);
-    public void load(T eventEntity);
-    public void unload(T eventEntity);
+    public void load(T eventEntity, Object invoker);
+    public void unload(T eventEntity, Object invoker);
     public void inject(Object object);
     public void remove(Object object);
 }

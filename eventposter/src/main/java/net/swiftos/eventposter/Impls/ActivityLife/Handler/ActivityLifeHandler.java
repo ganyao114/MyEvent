@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
-import net.swiftos.eventposter.Cache.EventCache;
 import net.swiftos.eventposter.Core.Injecter;
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
 import net.swiftos.eventposter.Exception.EventInvokeException;
@@ -57,7 +56,7 @@ public class ActivityLifeHandler implements IHandler,Application.ActivityLifecyc
     }
 
     @Override
-    public void load(IEventEntity eventEntity) {
+    public void load(IEventEntity eventEntity, Object object) {
         if (eventEntity == null)
             return;
         LifeInvokerEntity entity = (LifeInvokerEntity) eventEntity;
@@ -66,7 +65,7 @@ public class ActivityLifeHandler implements IHandler,Application.ActivityLifecyc
     }
 
     @Override
-    public void unload(IEventEntity eventEntity) {
+    public void unload(IEventEntity eventEntity, Object object) {
         if (eventEntity == null)
             return;
         LifeInvokerEntity entity = (LifeInvokerEntity) eventEntity;

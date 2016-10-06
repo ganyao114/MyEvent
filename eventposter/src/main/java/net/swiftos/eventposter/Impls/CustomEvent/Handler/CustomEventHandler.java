@@ -6,7 +6,6 @@ import net.swiftos.eventposter.Exception.EventInvokeException;
 import net.swiftos.eventposter.Impls.CustomEvent.Annotation.InjectEvent;
 import net.swiftos.eventposter.Impls.CustomEvent.Entity.CustomEventEntity;
 import net.swiftos.eventposter.Impls.CustomEvent.Entity.RunContextType;
-import net.swiftos.eventposter.Interface.IEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 
 import java.lang.reflect.Method;
@@ -20,6 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CustomEventHandler implements IHandler<CustomEventEntity>{
 
     private Map<Class,Map<String,CustomEventEntity>> eventMap = new ConcurrentHashMap<>();
+
+    private Map<Class,Object> stickyMap = new ConcurrentHashMap<>();
 
     @Override
     public void init(Object... objects) {
@@ -49,21 +50,32 @@ public class CustomEventHandler implements IHandler<CustomEventEntity>{
         entity.setAnnotation(eventAnno);
         entity.setParType(parType);
         entity.setInvokeType(annoInfo.getClazz());
+        entity.setSticky(eventAnno.sticky());
         return entity;
     }
 
     @Override
-    public void load(CustomEventEntity eventEntity) {
+    public void load(CustomEventEntity eventEntity, Object object) {
         Map<String,CustomEventEntity> map = eventMap.get(eventEntity.getParType());
         if (map == null){
             map = new ConcurrentHashMap<>();
             eventMap.put(eventEntity.getParType(),map);
         }
         map.put(eventEntity.getName(),eventEntity);
+        if (eventEntity.isSticky()){
+            Object value = stickyMap.get(eventEntity.getParType());
+            if (value != null) {
+                try {
+                    eventEntity.invoke(object,value);
+                } catch (EventInvokeException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
-    public void unload(CustomEventEntity eventEntity) {
+    public void unload(CustomEventEntity eventEntity, Object object) {
         Map<String,CustomEventEntity> map = eventMap.get(eventEntity.getParType());
         if (map == null)
             return;
@@ -118,6 +130,20 @@ public class CustomEventHandler implements IHandler<CustomEventEntity>{
         }
     }
 
+    public void broadCastSticky(Object object){
+        stickyMap.put(object.getClass(),object);
+        broadcast(object);
+    }
+
+    public void postSticky(Object object,String name){
+        stickyMap.put(object.getClass(),object);
+        post(object, name);
+    }
+
+    public void clearSticky(Class clazz){
+        stickyMap.remove(clazz);
+    }
+
     public ExtCall As(Object object){
         return new ExtCall(object);
     }
@@ -131,6 +157,18 @@ public class CustomEventHandler implements IHandler<CustomEventEntity>{
 
         public void BroadCast(){
             broadcast(object);
+        }
+
+        public void BroadCastSticky(){
+            broadCastSticky(object);
+        }
+
+        public void PostSticky(String name){
+            postSticky(object,name);
+        }
+
+        public void ClearSticky(Class clazz){
+            clearSticky(clazz);
         }
 
         public void Post(String name){

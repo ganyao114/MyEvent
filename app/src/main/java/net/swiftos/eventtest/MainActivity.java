@@ -16,6 +16,8 @@ import net.swiftos.eventposter.Impls.CustomEvent.Handler.CustomEventHandler;
 
 public class MainActivity extends AppCompatActivity {
 
+    StickyTest stickyTest;
+
     public MainActivity() {
 
     }
@@ -30,13 +32,14 @@ public class MainActivity extends AppCompatActivity {
     @ActivityLife(lifeType = ActivityLifeType.OnPause,activity = MainActivity.class)
     public void onPause(Activity activity){
         Toast.makeText(activity,"pause",Toast.LENGTH_LONG).show();
+        stickyTest = new StickyTest(this);
     }
 
     @ActivityLife(lifeType = ActivityLifeType.OnCreate,activity = MainActivity.class)
     public void onCreate(Activity activity,Bundle bundle){
         TestFlag flag = new TestFlag();
         flag.setName("haha");
-        EventPoster.With(CustomEventHandler.class).As(flag).Post("event_a");
+        EventPoster.With(CustomEventHandler.class).As(flag).BroadCastSticky();
     }
 
     @InjectEvent(name = "event_a",runType = RunContextType.MainThread)
@@ -48,5 +51,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventPoster.UnRegist(this);
+        EventPoster.UnRegist(stickyTest);
     }
 }

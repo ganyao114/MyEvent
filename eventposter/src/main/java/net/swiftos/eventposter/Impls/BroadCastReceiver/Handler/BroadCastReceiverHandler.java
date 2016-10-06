@@ -1,13 +1,13 @@
 package net.swiftos.eventposter.Impls.BroadCastReceiver.Handler;
 
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
-import net.swiftos.eventposter.Interface.IEventEntity;
+import net.swiftos.eventposter.Impls.BroadCastReceiver.Entity.BroadCastEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 
 /**
  * Created by gy939 on 2016/10/3.
  */
-public class BroadCastReceiverHandler implements IHandler {
+public class BroadCastReceiverHandler implements IHandler<BroadCastEntity> {
     @Override
     public void init(Object... objects) {
 
@@ -19,17 +19,17 @@ public class BroadCastReceiverHandler implements IHandler {
     }
 
     @Override
-    public IEventEntity parse(EventAnnoInfo annoInfo) {
+    public BroadCastEntity parse(EventAnnoInfo annoInfo) {
         return null;
     }
 
     @Override
-    public void load(IEventEntity annoInfo) {
+    public void load(BroadCastEntity eventEntity, Object object) {
 
     }
 
     @Override
-    public void unload(IEventEntity annoInfo) {
+    public void unload(BroadCastEntity eventEntity, Object object) {
 
     }
 

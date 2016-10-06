@@ -19,6 +19,15 @@ public class CustomEventEntity implements IEventEntity{
     private String name;
     private Class parType;
     private Class invokeType;
+    private boolean sticky;
+
+    public boolean isSticky() {
+        return sticky;
+    }
+
+    public void setSticky(boolean sticky) {
+        this.sticky = sticky;
+    }
 
     public Class getInvokeType() {
         return invokeType;

@@ -19,4 +19,5 @@ public @interface InjectEvent {
     String name() default "";
     RunContextType runType() default RunContextType.CurrentThread;
     int delay() default 0;
+    boolean sticky() default false;
 }
