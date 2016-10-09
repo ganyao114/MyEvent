@@ -11,6 +11,8 @@ import net.swiftos.eventposter.Interface.IHandler;
  */
 public class EventPoster {
 
+    private static Application app;
+
     public static <T extends IHandler> T With(Class<T> handlerType){
         IHandler handler = HandlerFactory.getHandler(handlerType);
         if (handler == null) return null;
@@ -26,11 +28,17 @@ public class EventPoster {
     }
 
     public static void init(Application application){
+        app = application;
         HandlerFactory.getHandler(ActivityLifeHandler.class).init(application);
     }
 
     public static void destory(Application application){
+        app = null;
         HandlerFactory.getHandler(ActivityLifeHandler.class).destory(application);
+    }
+
+    public static Application getApp(){
+        return app;
     }
 
     public static void PreLoad(final Class[] classes){

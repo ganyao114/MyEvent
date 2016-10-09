@@ -34,6 +34,28 @@ public class Injecter {
         instMap.get(clazz).add(object);
     }
 
+    public static void injectDeep(Object object){
+        Class clazz = object.getClass();
+        if (instMap.get(clazz) == null) {
+            synchronized (clazz) {
+                if (instMap.get(clazz) == null) {
+                    instMap.put(clazz, new Vector());
+                }
+            }
+        }
+        Class<?> template = clazz;
+        while (template != null && template != Object.class) {
+            // 过滤掉基类 因为基类是不包含注解的
+            if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity")
+                    || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
+                break;
+            }
+            load(object,template);
+            template = template.getSuperclass();
+        }
+        instMap.get(clazz).add(object);
+    }
+
 
     public static void remove(Object object){
         Class clazz = object.getClass();
@@ -42,12 +64,32 @@ public class Injecter {
             if (vector == null)
                 return;
             vector.remove(object);
-            dispatchRemove(object);
+            dispatchRemove(clazz,object);
         }
     }
 
-    private static void dispatchRemove(Object object) {
-        Method[] methods = ReflectionCache.getMethods(object.getClass());
+    public static void removeDeep(Object object){
+        Class clazz = object.getClass();
+        synchronized (clazz) {
+            Vector vector = instMap.get(object.getClass());
+            if (vector == null)
+                return;
+            vector.remove(object);
+            Class<?> template = clazz;
+            while (template != null && template != Object.class) {
+                // 过滤掉基类 因为基类是不包含注解的
+                if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity")
+                        || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
+                    break;
+                }
+                dispatchRemove(template,object);
+                template = template.getSuperclass();
+            }
+        }
+    }
+
+    private static void dispatchRemove(Class clazz,Object object) {
+        Method[] methods = ReflectionCache.getMethods(clazz);
         if (methods == null)
             return;
         Map<Class<? extends IHandler>,IHandler> handlerMap = new HashMap<>();
