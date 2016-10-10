@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 public @interface ViewEventBase {
     Class<?> listenerType();
 
+    Class<?> viewType();
+
     String listenerSetter();
 
     String methodName();

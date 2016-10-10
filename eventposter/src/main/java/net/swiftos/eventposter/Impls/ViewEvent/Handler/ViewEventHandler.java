@@ -4,6 +4,7 @@ import android.util.SparseArray;
 import android.view.View;
 
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
+import net.swiftos.eventposter.Impls.ViewEvent.Annotation.ViewEventBase;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.ViewEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 
@@ -35,10 +36,17 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
     @Override
     public ViewEventEntity parse(EventAnnoInfo annoInfo) {
         Annotation annotation = annoInfo.getAnnotation();
+        ViewEventBase viewEventBase = annotation.annotationType().getAnnotation(ViewEventBase.class);
+        if (viewEventBase == null)
+            return null;    //throw exception better
         int[] ids = getIdFromAnno(annotation);
         if (ids == null)
-            return null;
-
+            return null;    //throw exception better
+        try {
+            Method registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
