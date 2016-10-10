@@ -1,1 +1,1 @@
-include ':app', ':eventposter'
+include ':app', ':eventposter', ':SwiftFrameWork'
