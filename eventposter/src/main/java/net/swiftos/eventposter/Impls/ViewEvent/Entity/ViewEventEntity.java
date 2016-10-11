@@ -10,11 +10,20 @@ import java.lang.reflect.Method;
  */
 public class ViewEventEntity implements IEventEntity{
 
+    private String context;
     private int[] ids;
     private Method registMethod;
     private Method callBackMethod;
     private Class inter;
 
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
 
     public int[] getIds() {
         return ids;

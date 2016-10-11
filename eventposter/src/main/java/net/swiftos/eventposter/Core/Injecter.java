@@ -130,6 +130,7 @@ public class Injecter {
                     if (eventEntity == null){
                         if (handler == null) continue;
                         eventEntity = handler.parse(eventAnnoInfo);
+                        if (eventEntity == null) continue;
                         EventCache.addEventEntity(eventAnnoInfo.getAnnotation(), eventEntity);
                     }
                     if (object == null) continue;

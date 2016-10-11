@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ViewEventHandler implements IHandler<ViewEventEntity> {
 
-    private Map<Integer,WeakReference<View>> viewMap = new ConcurrentHashMap<>();
+    private Map<String,Map<Integer,WeakReference<View>>> viewMap = new ConcurrentHashMap<>();
 
     @Override
     public void init(Object... objects) {
@@ -40,15 +40,26 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
         if (viewEventBase == null)
             return null;    //throw exception better
         int[] ids = getIdFromAnno(annotation);
-        if (ids == null)
+        String context = getContextFromAnno(annotation);
+        if (ids == null||context == null)
             return null;    //throw exception better
+        Method registMethod = null;
+        Method interMethod = null;
         try {
-            Method registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter());
-
+            registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter());
+            interMethod = viewEventBase.listenerType().getDeclaredMethod(viewEventBase.methodName());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        if (registMethod == null||interMethod == null)
+            return null;
+        ViewEventEntity entity = new ViewEventEntity();
+        entity.setRegistMethod(registMethod);
+        entity.setIds(ids);
+        entity.setContext(context);
+        entity.setInter(viewEventBase.listenerType());
+        entity.setCallBackMethod(interMethod);
+        return entity;
     }
 
     @Override
@@ -70,7 +81,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
         int[] viewIds = null;
         try {
             Method aMethod = annotation.annotationType()
-                    .getDeclaredMethod("value");
+                    .getDeclaredMethod("viewIds");
             viewIds = (int[]) aMethod
                     .invoke(annotation);
         } catch (Exception e) {
@@ -79,18 +90,40 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
         return viewIds;
     }
 
+    private String getContextFromAnno(Annotation annotation){
+        String context = null;
+        try {
+            Method aMethod = annotation.annotationType()
+                    .getDeclaredMethod("context");
+            context = (String) aMethod
+                    .invoke(annotation);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return context;
+    }
+
+    private void doRegistView(){
+
+    }
+
     @Override
     public void remove(Object object) {
 
     }
 
-    public void addView(int viewId,View view){
+    public void addView(String context,View view){
 
     }
 
-    public void removeView(int viewId){
+    public void removeView(String context,View view){
 
     }
+
+    public void removeViews(String context){
+
+    }
+
 
 
 }
