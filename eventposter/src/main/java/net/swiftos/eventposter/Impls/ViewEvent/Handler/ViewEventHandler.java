@@ -44,6 +44,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             return null;    //throw exception better
         try {
             Method registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter());
+
         } catch (Exception e) {
             e.printStackTrace();
         }

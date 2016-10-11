@@ -15,5 +15,6 @@ import java.lang.annotation.Target;
 @EventBase(ViewEventHandler.class)
 @ViewEventBase(listenerType = View.OnClickListener.class, listenerSetter = "setOnClickListener", methodName = "onClick",viewType = View.class)
 public @interface OnClick {
-    int[] value();
+    String context();
+    int[] viewIds();
 }
