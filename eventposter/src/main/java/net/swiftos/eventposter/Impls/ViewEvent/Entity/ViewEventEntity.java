@@ -3,6 +3,7 @@ package net.swiftos.eventposter.Impls.ViewEvent.Entity;
 import net.swiftos.eventposter.Exception.EventInvokeException;
 import net.swiftos.eventposter.Interface.IEventEntity;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -13,9 +14,35 @@ public class ViewEventEntity implements IEventEntity{
     private String context;
     private int[] ids;
     private Method registMethod;
-    private Method callBackMethod;
+    private Method callMethod;
+    private String callBackMethodName;
     private Class inter;
+    private Annotation annotation;
+    private Class clazz;
 
+    public Class getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Class clazz) {
+        this.clazz = clazz;
+    }
+
+    public String getCallBackMethodName() {
+        return callBackMethodName;
+    }
+
+    public void setCallBackMethodName(String callBackMethodName) {
+        this.callBackMethodName = callBackMethodName;
+    }
+
+    public Annotation getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(Annotation annotation) {
+        this.annotation = annotation;
+    }
 
     public String getContext() {
         return context;
@@ -41,12 +68,12 @@ public class ViewEventEntity implements IEventEntity{
         this.registMethod = registMethod;
     }
 
-    public Method getCallBackMethod() {
-        return callBackMethod;
+    public Method getCallMethod() {
+        return callMethod;
     }
 
-    public void setCallBackMethod(Method callBackMethod) {
-        this.callBackMethod = callBackMethod;
+    public void setCallMethod(Method callMethod) {
+        this.callMethod = callMethod;
     }
 
     public Class getInter() {
