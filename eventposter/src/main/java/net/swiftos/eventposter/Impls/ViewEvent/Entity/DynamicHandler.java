@@ -21,7 +21,8 @@ public class DynamicHandler implements InvocationHandler {
 
 
     public void addHandler(Class handler) {
-        handlerTypes.add(handler);
+        if (!handlerTypes.contains(handler))
+            handlerTypes.add(handler);
     }
 
     public void rmHandler(Class handler){

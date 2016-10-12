@@ -3,10 +3,13 @@ package net.swiftos.eventposter.Impls.ViewEvent.Handler;
 import android.util.SparseArray;
 import android.view.View;
 
+import net.swiftos.eventposter.Cache.EventCache;
+import net.swiftos.eventposter.Core.Injecter;
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
 import net.swiftos.eventposter.Impls.ViewEvent.Annotation.ViewEventBase;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.DynamicHandler;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.ViewEventEntity;
+import net.swiftos.eventposter.Interface.IEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 import net.swiftos.eventposter.Utils.LOG;
 
@@ -14,6 +17,7 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Vector;
 import java.util.WeakHashMap;
@@ -26,7 +30,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
 
     private Map<String,Map<Integer,WeakReference<View>>> viewMap = new ConcurrentHashMap<>();
     private Map<String,Map<Integer,Vector<Annotation>>> viewEventMap = new ConcurrentHashMap<>();
-    private Map<Annotation,Map<Integer,DynamicHandler>> viewProxyMap = new ConcurrentHashMap<>();
+    private Map<Annotation,DynamicHandler> viewProxyMap = new ConcurrentHashMap<>();
 
     @Override
     public void init(Object... objects) {
@@ -129,7 +133,41 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
     }
 
     private void doRegistView(String context,View view){
-
+        Map<Integer,Vector<Annotation>> viewEvents = viewEventMap.get(context);
+        if (viewEvents == null){
+            LOG.e("未注册Context");
+            return;
+        }
+        int id = view.getId();
+        if (id == View.NO_ID){
+            LOG.e("View没有ID");
+            return;
+        }
+        Vector<Annotation> annos = viewEvents.get(id);
+        if (annos == null){
+            LOG.e("没有此ID");
+            return;
+        }
+        for (Annotation annotation:annos){
+            IEventEntity et = EventCache.getEventEntity(annotation);
+            if (et == null) continue;
+            ViewEventEntity entity = (ViewEventEntity) et;
+            DynamicHandler handler = viewProxyMap.get(annotation);
+            if (handler == null){
+                handler = generateDymHandler(entity);
+                viewProxyMap.put(annotation,handler);
+            }else {
+                handler.addHandler(entity.getClazz());
+            }
+            Object listener = Proxy.newProxyInstance(
+                    entity.getInter().getClassLoader(),
+                    new Class<?>[]{entity.getInter()}, handler);
+            try {
+                entity.getRegistMethod().invoke(view,listener);
+            } catch (Exception e) {
+                LOG.e("注册监听失败");
+            }
+        }
     }
 
     private void doRegistView(String context,int id){
