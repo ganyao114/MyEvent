@@ -34,7 +34,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
 
     @Override
     public void init(Object... objects) {
-
+        LOG.e("ViewEvent --- init");
     }
 
     @Override
@@ -54,7 +54,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             return null;    //throw exception better
         Method registMethod = null;
         try {
-            registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter());
+            registMethod = viewEventBase.viewType().getDeclaredMethod(viewEventBase.listenerSetter(),viewEventBase.listenerType());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -171,7 +171,22 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
     }
 
     private void doRegistView(String context,int id){
-
+        Map<Integer,WeakReference<View>> views = viewMap.get(context);
+        if (views == null){
+            LOG.e("未注册Context");
+            return;
+        }
+        WeakReference<View> viewRef = views.get(id);
+        if (viewRef == null){
+            LOG.e("无id");
+            return;
+        }
+        View view = viewRef.get();
+        if (view == null){
+            LOG.e("view 已销毁");
+            return;
+        }
+        doRegistView(context,view);
     }
 
     private DynamicHandler generateDymHandler(ViewEventEntity entity){
@@ -224,6 +239,11 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
     }
 
     public void removeViews(String context){
+        Map<Integer,WeakReference<View>> views = viewMap.remove(context);
+        if (views == null){
+            LOG.e("未注册Context");
+            return;
+        }
 
     }
 

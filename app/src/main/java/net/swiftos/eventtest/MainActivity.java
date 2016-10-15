@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v4.media.MediaBrowserCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.Toast;
 
 import net.swiftos.eventposter.Core.EventPoster;
@@ -13,6 +14,7 @@ import net.swiftos.eventposter.Impls.ActivityLife.Handler.ActivityLifeHandler;
 import net.swiftos.eventposter.Impls.CustomEvent.Annotation.InjectEvent;
 import net.swiftos.eventposter.Impls.CustomEvent.Entity.RunContextType;
 import net.swiftos.eventposter.Impls.CustomEvent.Handler.CustomEventHandler;
+import net.swiftos.eventposter.Impls.ViewEvent.Handler.ViewEventHandler;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
         EventPoster.Regist(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EventPoster.With(ViewEventHandler.class).addView("main",findViewById(R.id.button));
+        Button button = (Button) findViewById(R.id.button);
     }
 
     @ActivityLife(lifeType = ActivityLifeType.OnPause,activity = MainActivity.class)
@@ -52,5 +56,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         EventPoster.UnRegist(this);
         EventPoster.UnRegist(stickyTest);
+        EventPoster.With(ViewEventHandler.class).removeView("main",findViewById(R.id.button));
     }
 }
