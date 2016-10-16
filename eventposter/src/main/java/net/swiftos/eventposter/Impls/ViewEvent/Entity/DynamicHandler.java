@@ -1,6 +1,7 @@
 package net.swiftos.eventposter.Impls.ViewEvent.Entity;
 
 import net.swiftos.eventposter.Core.Injecter;
+import net.swiftos.eventposter.Exception.EventInvokeException;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
@@ -38,8 +39,13 @@ public class DynamicHandler implements InvocationHandler {
             for (Class handlerType:handlerTypes) {
                 Vector handlers = Injecter.getInsts(handlerType);
                 if (handlers == null) continue;
-                for (Object handler:handlers)
-                    method.invoke(handler, args);
+                for (Object handler:handlers) {
+                    try {
+                        method.invoke(handler, args);
+                    } catch (Exception e){
+                        throw new EventInvokeException(e.getMessage());
+                    }
+                }
             }
         }
         return null;

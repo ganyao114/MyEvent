@@ -9,6 +9,7 @@ import net.swiftos.eventposter.Entity.EventAnnoInfo;
 import net.swiftos.eventposter.Impls.ViewEvent.Annotation.ViewEventBase;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.DynamicHandler;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.ViewEventEntity;
+import net.swiftos.eventposter.Impls.ViewEvent.Interface.OnViewAttachListener;
 import net.swiftos.eventposter.Interface.IEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 import net.swiftos.eventposter.Utils.LOG;
@@ -244,6 +245,10 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             LOG.e("未注册Context");
             return;
         }
+
+    }
+
+    public void setViewAttachListener(String context, int viewId, OnViewAttachListener listener){
 
     }
 
