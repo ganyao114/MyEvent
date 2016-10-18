@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     @ActivityLife(lifeType = ActivityLifeType.OnPause,activity = MainActivity.class)
     public void onPause(Activity activity){
-        Toast.makeText(activity,"pause",Toast.LENGTH_LONG).show();
+//        Toast.makeText(activity,"pause",Toast.LENGTH_LONG).show();
         stickyTest = new StickyTest(this);
     }
 

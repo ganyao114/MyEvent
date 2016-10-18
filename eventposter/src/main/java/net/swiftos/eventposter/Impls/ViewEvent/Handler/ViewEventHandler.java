@@ -1,10 +1,8 @@
 package net.swiftos.eventposter.Impls.ViewEvent.Handler;
 
-import android.util.SparseArray;
 import android.view.View;
 
 import net.swiftos.eventposter.Cache.EventCache;
-import net.swiftos.eventposter.Core.Injecter;
 import net.swiftos.eventposter.Entity.EventAnnoInfo;
 import net.swiftos.eventposter.Impls.ViewEvent.Annotation.ViewEventBase;
 import net.swiftos.eventposter.Impls.ViewEvent.Entity.DynamicHandler;
@@ -13,25 +11,26 @@ import net.swiftos.eventposter.Impls.ViewEvent.Interface.OnViewAttachListener;
 import net.swiftos.eventposter.Interface.IEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
 import net.swiftos.eventposter.Utils.LOG;
+import net.swiftos.eventposter.Utils.SyncWeakList;
 
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Vector;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by gy939 on 2016/10/10.
  */
-public class ViewEventHandler implements IHandler<ViewEventEntity> {
+public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachListener{
 
     private Map<String,Map<Integer,WeakReference<View>>> viewMap = new ConcurrentHashMap<>();
     private Map<String,Map<Integer,Vector<Annotation>>> viewEventMap = new ConcurrentHashMap<>();
     private Map<Annotation,DynamicHandler> viewProxyMap = new ConcurrentHashMap<>();
+
+    private Map<String,SyncWeakList<OnViewAttachListener>> attachlsMap = new ConcurrentHashMap<>();
 
     @Override
     public void init(Object... objects) {
@@ -218,6 +217,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             return;
         }
         views.put(id,new WeakReference<View>(view));
+        onViewAttached(context,view);
         doRegistView(context, view);
     }
 
@@ -236,6 +236,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             LOG.e("没有此ID");
             return;
         }
+        onViewDettached(context,view);
         views.remove(id);
     }
 
@@ -245,13 +246,48 @@ public class ViewEventHandler implements IHandler<ViewEventEntity> {
             LOG.e("未注册Context");
             return;
         }
-
+        for (WeakReference<View> viewRef:views.values()){
+            View view = viewRef.get();
+            if (view != null){
+                onViewDettached(context,view);
+            }
+        }
     }
 
-    public void setViewAttachListener(String context, int viewId, OnViewAttachListener listener){
+    public void addViewAttachListener(String context, OnViewAttachListener listener){
+        synchronized (context) {
+            SyncWeakList<OnViewAttachListener> attachListeners =  attachlsMap.get(context);
+            if (attachListeners == null) {
+                attachListeners = new SyncWeakList<>();
+                attachlsMap.put(context,attachListeners);
+            }
+            if (!attachListeners.contains(listener))
+                attachListeners.add(listener);
+        }
+    }
 
+    public void removeViewAttachListener(String context, OnViewAttachListener listener){
+        SyncWeakList<OnViewAttachListener> attachListeners =  attachlsMap.get(context);
+        if (attachListeners == null) return;
+        attachListeners.remove(listener);
     }
 
 
+    @Override
+    public void onViewAttached(String context, View view) {
+        SyncWeakList<OnViewAttachListener> listeners = attachlsMap.get(context);
+        if (listeners == null) return;
+        for (OnViewAttachListener listener:listeners){
+            listener.onViewAttached(context, view);
+        }
+    }
 
+    @Override
+    public void onViewDettached(String context, View view) {
+        SyncWeakList<OnViewAttachListener> listeners = attachlsMap.get(context);
+        if (listeners == null) return;
+        for (OnViewAttachListener listener:listeners){
+            listener.onViewDettached(context, view);
+        }
+    }
 }

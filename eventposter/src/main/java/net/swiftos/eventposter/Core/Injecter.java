@@ -46,8 +46,8 @@ public class Injecter {
         Class<?> template = clazz;
         while (template != null && template != Object.class) {
             // 过滤掉基类 因为基类是不包含注解的
-            if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity")
-                    || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
+            String clazzName = template.getName();
+            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
                 break;
             }
             load(object,template);
@@ -78,8 +78,8 @@ public class Injecter {
             Class<?> template = clazz;
             while (template != null && template != Object.class) {
                 // 过滤掉基类 因为基类是不包含注解的
-                if (template.getName().equals("android.app.Activity") || template.getName().equals("android.support.v4.app.FragmentActivity")
-                        || template.getName().equals("android.support.v4.app.Fragment") || template.getName().equals("android.app.Fragment")) {
+                String clazzName = template.getName();
+                if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
                     break;
                 }
                 dispatchRemove(template,object);
@@ -112,6 +112,19 @@ public class Injecter {
 
     public static Vector getInsts(Class clazz){
         return instMap.get(clazz);
+    }
+
+    public static void loadDeep(Object object,Class clazz){
+        Class<?> template = clazz;
+        while (template != null && template != Object.class) {
+            // 过滤掉基类 因为基类是不包含注解的
+            String clazzName = template.getName();
+            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
+                break;
+            }
+            load(object, clazz);
+            template = template.getSuperclass();
+        }
     }
 
     public static void load(Object object,Class clazz){

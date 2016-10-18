@@ -27,6 +27,14 @@ public class EventPoster {
         Injecter.remove(object);
     }
 
+    public static void RegistDeep(Object object){
+        Injecter.injectDeep(object);
+    }
+
+    public static void UnRegistDeep(Object object){
+        Injecter.removeDeep(object);
+    }
+
     public static void init(Application application){
         app = application;
         HandlerFactory.getHandler(ActivityLifeHandler.class).init(application);
@@ -47,6 +55,17 @@ public class EventPoster {
             public void run() {
                 for (Class clazz:classes){
                     Injecter.load(null,clazz);
+                }
+            }
+        }).start();
+    }
+
+    public static void PreLoadDeep(final Class[] classes){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (Class clazz:classes){
+                    Injecter.loadDeep(null,clazz);
                 }
             }
         }).start();
