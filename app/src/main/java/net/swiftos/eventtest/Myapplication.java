@@ -15,7 +15,7 @@ public class Myapplication extends Application{
     public void onCreate() {
         super.onCreate();
         EventPoster.init(this);
-        EventPoster.PreLoad(new Class[]{MainActivity.class});
+        EventPoster.PreLoadDeep(new Class[]{MainActivity.class,DeepTest.class,MainPresenter.class});
         Presenter.establish();
         Presenter.With(null).start(MainPresenter.class);
         LeakCanary.install(this);

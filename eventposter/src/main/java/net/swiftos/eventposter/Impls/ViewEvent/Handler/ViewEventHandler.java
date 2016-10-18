@@ -261,15 +261,26 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
                 attachListeners = new SyncWeakList<>();
                 attachlsMap.put(context,attachListeners);
             }
-            if (!attachListeners.contains(listener))
+            if (!attachListeners.contains(listener)) {
                 attachListeners.add(listener);
+                Map<Integer,WeakReference<View>> views = viewMap.get(context);
+                if (views == null) return;
+                for (WeakReference<View> viewRef:views.values()){
+                    View view = viewRef.get();
+                    if (view != null){
+                        listener.onViewAttached(context,view);
+                    }
+                }
+            }
         }
     }
 
     public void removeViewAttachListener(String context, OnViewAttachListener listener){
         SyncWeakList<OnViewAttachListener> attachListeners =  attachlsMap.get(context);
         if (attachListeners == null) return;
-        attachListeners.remove(listener);
+        synchronized (context) {
+            attachListeners.remove(listener);
+        }
     }
 
 

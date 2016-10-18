@@ -6,6 +6,7 @@ import net.swiftos.eventposter.Entity.EventAnnoInfo;
 import net.swiftos.eventposter.Factory.HandlerFactory;
 import net.swiftos.eventposter.Interface.IEventEntity;
 import net.swiftos.eventposter.Interface.IHandler;
+import net.swiftos.eventposter.Presenter.Presenter;
 import net.swiftos.eventposter.Reflect.Parse.ClassParser;
 
 import java.lang.reflect.Method;
@@ -47,7 +48,8 @@ public class Injecter {
         while (template != null && template != Object.class) {
             // 过滤掉基类 因为基类是不包含注解的
             String clazzName = template.getName();
-            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
+            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.")
+                    || clazzName.startsWith("android.") || clazz.equals(Presenter.class)) {
                 break;
             }
             load(object,template);
@@ -79,7 +81,8 @@ public class Injecter {
             while (template != null && template != Object.class) {
                 // 过滤掉基类 因为基类是不包含注解的
                 String clazzName = template.getName();
-                if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
+                if (clazzName.startsWith("java.") || clazzName.startsWith("javax.")
+                        || clazzName.startsWith("android.") || clazz.equals(Presenter.class)) {
                     break;
                 }
                 dispatchRemove(template,object);
@@ -119,7 +122,8 @@ public class Injecter {
         while (template != null && template != Object.class) {
             // 过滤掉基类 因为基类是不包含注解的
             String clazzName = template.getName();
-            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.") || clazzName.startsWith("android.")) {
+            if (clazzName.startsWith("java.") || clazzName.startsWith("javax.")
+                    || clazzName.startsWith("android.") || clazz.equals(Presenter.class)) {
                 break;
             }
             load(object, clazz);

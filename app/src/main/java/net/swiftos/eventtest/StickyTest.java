@@ -17,12 +17,11 @@ public class StickyTest {
 
     public StickyTest(Context context) {
         this.context = context;
-        EventPoster.Regist(this);
     }
 
     @InjectEvent(runType = RunContextType.MainLoop,sticky = true)
     public void show(TestFlag flag){
-        Toast.makeText(context,flag.getName(),Toast.LENGTH_LONG).show();
+        Toast.makeText(context,"deep test" + flag.getName(),Toast.LENGTH_LONG).show();
     }
 
 }

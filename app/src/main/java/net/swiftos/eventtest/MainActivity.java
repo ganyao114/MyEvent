@@ -18,7 +18,7 @@ import net.swiftos.eventposter.Impls.ViewEvent.Handler.ViewEventHandler;
 
 public class MainActivity extends AppCompatActivity {
 
-    StickyTest stickyTest;
+    DeepTest deepTest;
 
     public MainActivity() {
 
@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
 
     @ActivityLife(lifeType = ActivityLifeType.OnPause,activity = MainActivity.class)
     public void onPause(Activity activity){
-//        Toast.makeText(activity,"pause",Toast.LENGTH_LONG).show();
-        stickyTest = new StickyTest(this);
+        Toast.makeText(activity,"pause",Toast.LENGTH_LONG).show();
+        deepTest = new DeepTest(this);
     }
 
     @ActivityLife(lifeType = ActivityLifeType.OnCreate,activity = MainActivity.class)
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         EventPoster.UnRegist(this);
-        EventPoster.UnRegist(stickyTest);
+        EventPoster.UnRegistDeep(deepTest);
         EventPoster.With(ViewEventHandler.class).removeView("main",findViewById(R.id.button));
     }
 }
