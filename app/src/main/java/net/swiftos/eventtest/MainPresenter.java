@@ -1,5 +1,6 @@
 package net.swiftos.eventtest;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -18,7 +19,13 @@ public class MainPresenter extends Presenter implements OnViewAttachListener {
 
     @OnClick(context = "main",viewIds = R.id.button)
     public void OnClick(View view){
-        Toast.makeText(view.getContext(),"click",Toast.LENGTH_LONG).show();
+        if (view.getTag().equals("main2")) {
+            Toast.makeText(view.getContext(), "click", Toast.LENGTH_LONG).show();
+        }else if (view.getTag().equals("main")){
+            Intent intent = new Intent();
+            intent.setClass(view.getContext(),Main2Activity.class);
+            view.getContext().startActivity(intent);
+        }
     }
 
     @Override

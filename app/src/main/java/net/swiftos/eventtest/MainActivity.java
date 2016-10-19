@@ -19,6 +19,7 @@ import net.swiftos.eventposter.Impls.ViewEvent.Handler.ViewEventHandler;
 public class MainActivity extends AppCompatActivity {
 
     DeepTest deepTest;
+    Button button;
 
     public MainActivity() {
 
@@ -29,8 +30,9 @@ public class MainActivity extends AppCompatActivity {
         EventPoster.Regist(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        EventPoster.With(ViewEventHandler.class).addView("main",findViewById(R.id.button));
-        Button button = (Button) findViewById(R.id.button);
+        button = (Button) findViewById(R.id.button);
+        button.setTag("main");
+        EventPoster.With(ViewEventHandler.class).addView("main",button);
     }
 
     @ActivityLife(lifeType = ActivityLifeType.OnPause,activity = MainActivity.class)
@@ -56,6 +58,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         EventPoster.UnRegist(this);
         EventPoster.UnRegistDeep(deepTest);
-        EventPoster.With(ViewEventHandler.class).removeView("main",findViewById(R.id.button));
+        EventPoster.With(ViewEventHandler.class).removeView("main",button);
     }
 }
