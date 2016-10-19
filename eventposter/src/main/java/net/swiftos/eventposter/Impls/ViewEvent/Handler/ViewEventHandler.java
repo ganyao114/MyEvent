@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachListener{
 
-    private Map<String,Map<Integer,WeakReference<View>>> viewMap = new ConcurrentHashMap<>();
+    private Map<String,Map<Integer,SyncWeakList<View>>> viewMap = new ConcurrentHashMap<>();
     private Map<String,Map<Integer,Vector<Annotation>>> viewEventMap = new ConcurrentHashMap<>();
     private Map<Annotation,DynamicHandler> viewProxyMap = new ConcurrentHashMap<>();
 
@@ -171,22 +171,19 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
     }
 
     private void doRegistView(String context,int id){
-        Map<Integer,WeakReference<View>> views = viewMap.get(context);
+        Map<Integer,SyncWeakList<View>> views = viewMap.get(context);
         if (views == null){
             LOG.e("未注册Context");
             return;
         }
-        WeakReference<View> viewRef = views.get(id);
-        if (viewRef == null){
+        SyncWeakList<View> viewList = views.get(id);
+        if (viewList == null){
             LOG.e("无id");
             return;
         }
-        View view = viewRef.get();
-        if (view == null){
-            LOG.e("view 已销毁");
-            return;
+        for (View view:viewList){
+            doRegistView(context,view);
         }
-        doRegistView(context,view);
     }
 
     private DynamicHandler generateDymHandler(ViewEventEntity entity){
@@ -202,7 +199,7 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
     }
 
     public void addView(String context,View view){
-        Map<Integer,WeakReference<View>> views = viewMap.get(context);
+        Map<Integer,SyncWeakList<View>> views = viewMap.get(context);
         if (views == null){
             views = new ConcurrentHashMap<>();
             viewMap.put(context,views);
@@ -212,17 +209,22 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
             LOG.e("View没有ID");
             return;
         }
-        if (views.containsKey(id)){
-            LOG.e("ID重复");
+        SyncWeakList<View> viewList = views.get(id);
+        if (viewList == null){
+            viewList = new SyncWeakList<>();
+            views.put(id,viewList);
+        }
+        if (viewList.contains(view)){
+            LOG.e("View 已存在");
             return;
         }
-        views.put(id,new WeakReference<View>(view));
+        viewList.add(view);
         onViewAttached(context,view);
         doRegistView(context, view);
     }
 
     public void removeView(String context,View view){
-        Map<Integer,WeakReference<View>> views = viewMap.get(context);
+        Map<Integer,SyncWeakList<View>> views = viewMap.get(context);
         if (views == null){
             LOG.e("未注册Context");
             return;
@@ -232,24 +234,24 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
             LOG.e("View没有ID");
             return;
         }
-        if (!views.containsKey(id)){
+        SyncWeakList<View> viewList = views.get(id);
+        if (viewList == null){
             LOG.e("没有此ID");
             return;
         }
         onViewDettached(context,view);
-        views.remove(id);
+        viewList.remove(view);
     }
 
     public void removeViews(String context){
-        Map<Integer,WeakReference<View>> views = viewMap.remove(context);
+        Map<Integer,SyncWeakList<View>> views = viewMap.remove(context);
         if (views == null){
             LOG.e("未注册Context");
             return;
         }
-        for (WeakReference<View> viewRef:views.values()){
-            View view = viewRef.get();
-            if (view != null){
-                onViewDettached(context,view);
+        for (SyncWeakList<View> viewList:views.values()){
+            for (View view:viewList) {
+                onViewDettached(context, view);
             }
         }
     }
@@ -263,12 +265,11 @@ public class ViewEventHandler implements IHandler<ViewEventEntity>,OnViewAttachL
             }
             if (!attachListeners.contains(listener)) {
                 attachListeners.add(listener);
-                Map<Integer,WeakReference<View>> views = viewMap.get(context);
+                Map<Integer,SyncWeakList<View>> views = viewMap.get(context);
                 if (views == null) return;
-                for (WeakReference<View> viewRef:views.values()){
-                    View view = viewRef.get();
-                    if (view != null){
-                        listener.onViewAttached(context,view);
+                for (SyncWeakList<View> viewList:views.values()){
+                    for (View view:viewList) {
+                        onViewDettached(context, view);
                     }
                 }
             }
